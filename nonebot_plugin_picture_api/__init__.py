@@ -5,7 +5,30 @@ from nonebot.adapters.onebot.v11 import MessageSegment
 from nonebot.params import Fullmatch
 import httpx
 from random import choice
+from nonebot.plugin import PluginMetadata
 
+__plugin_meta__ = PluginMetadata(
+    name="nonebot-plugin-picture-api",
+    description="一款可以自由增删图片指令和api的插件",
+    usage="配置好后发送相应的指令即可，配置文件在cofig/picture_api_config",
+
+
+    type="application",
+    # 发布必填，当前有效类型有：`library`（为其他插件编写提供功能），`application`（向机器人用户提供功能）。
+
+
+    homepage="https://github.com/Q1351998764/nonebot-plugin-picture-api",
+    # 发布必填。
+
+
+    config=Config,
+    # 插件配置项类，如无需配置可不填写。
+
+
+    supported_adapters={"~onebot.v11"},
+    # 支持的适配器集合，其中 `~` 在此处代表前缀 `nonebot.adapters.`，其余适配器亦按此格式填写。
+    # 若插件可以保证兼容所有适配器（即仅使用基本适配器功能）可不填写，否则应该列出插件支持的适配器。
+)
 plugin_config = Config.parse_obj(get_driver().config)
 cmds_config = plugin_config.data
 
