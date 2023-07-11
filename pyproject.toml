@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "nonebot-plugin-picture-api"
+version = "0.1.0"
+description = ""
+authors = ["Q1351998764 <57926506+Q1351998764@users.noreply.github.com>"]
+readme = "README.md"
+packages = [{include = "nonebot_plugin_picture_api"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+nonebot2 = ">= 2.0.0"
+nonebot-adapters-onebot = ">= 2.2.3"
+httpx = ">=0.23.3"
+pyyaml = ">=6.0"
+pydantic = ">=1.10.7'
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
