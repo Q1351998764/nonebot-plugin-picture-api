@@ -12,7 +12,7 @@ nonebot2 = ">= 2.0.0"
 nonebot-adapters-onebot = ">= 2.2.3"
 httpx = ">=0.23.3"
 pyyaml = ">=6.0"
-pydantic = ">=1.10.7'
+pydantic = ">=1.10.7"
 
 [build-system]
 requires = ["poetry-core"]
