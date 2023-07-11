@@ -40,7 +40,7 @@ for i in cmds_config:
         cmds.append(i)
 
 pic = on_fullmatch(cmds, priority=10, block=True)
-print(cmds_config)
+
 @pic.handle()
 async def handle_function(arg: str = Fullmatch()):
     for i in cmds_config:
