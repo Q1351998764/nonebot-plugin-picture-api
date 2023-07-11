@@ -8,7 +8,7 @@
 
 # nonebot-plugin-picture-api
 
-_✨ NoneBot 插件简单描述 ✨_
+_✨ 一款可以自由增删图片指令和api的插件 ✨_
 
 
 <a href="./LICENSE">
@@ -21,33 +21,13 @@ _✨ NoneBot 插件简单描述 ✨_
 
 </div>
 
-这是一个 nonebot2 插件项目的模板库, 你可以直接使用本模板创建你的 nonebot2 插件项目的仓库
-
-模板库使用方法:
-1. 点击仓库中的 "Use this template" 按钮, 输入仓库名与描述, 点击 "  Create repository from template" 创建仓库
-2. 在创建好的新仓库中, 在 "Add file" 菜单中选择 "Create new file", 在新文件名处输入`LICENSE`, 此时在右侧会出现一个 "Choose a license template" 按钮, 点击此按钮选择开源协议模板, 然后在最下方提交新文件到主分支
-3. 全局替换`Q1351998764`为仓库所有者ID; 全局替换`nonebot-plugin-picture-api`为插件名; 全局替换`nonebot_plugin_picture_api`为包名; 修改 python 徽标中的版本为你插件的运行所需版本
-4. 修改 README 中的插件名和插件描述, 并在下方填充相应的内容
-
-配置发布工作流:
-1. 前往 https://pypi.org/manage/account/#api-tokens 并创建一个新的 API 令牌。创建成功后不要关闭页面，不然你将无法再次查看此令牌。
-2. 在单独的浏览器选项卡或窗口中，[打开 Actions secrets and variables 页面](./settings/secrets/actions)。你也可以在 Settings - Secrets and variables - Actions 中找到此页面。
-3. 点击 New repository secret 按钮，创建一个名为 `PYPI_API_TOKEN` 的新令牌，并从第一步复制粘贴令牌。
-
-触发发布工作流:
-推送任意 tag 即可触发。
-
-创建 tag:
-
-    git tag <tag_name>
-
-推送本地所有 tag:
-
-    git push origin --tags
 
 ## 📖 介绍
 
-这里是插件的详细介绍部分
+在我调用各种图片api的时候，觉得每个api取一个指令并写一个小插件太麻烦了，因此写了本插件，只需配置yml即可增添图片api以及触发指令，如下图所示：
+
+![image](https://github.com/Q1351998764/nonebot-plugin-picture-api/assets/57926506/6bf57db6-e96f-40a5-a04f-287c525d6db4)
+
 
 ## 💿 安装
 
@@ -68,42 +48,69 @@ _✨ NoneBot 插件简单描述 ✨_
 
     pip install nonebot-plugin-picture-api
 </details>
-<details>
-<summary>pdm</summary>
-
-    pdm add nonebot-plugin-picture-api
-</details>
-<details>
-<summary>poetry</summary>
-
-    poetry add nonebot-plugin-picture-api
-</details>
-<details>
-<summary>conda</summary>
-
-    conda install nonebot-plugin-picture-api
-</details>
 
 打开 nonebot2 项目根目录下的 `pyproject.toml` 文件, 在 `[tool.nonebot]` 部分追加写入
 
-    plugins = ["nonebot_plugin_picture_api"]
+    plugins = ["nonebot-plugin-picture-api"]
 
 </details>
 
 ## ⚙️ 配置
 
-在 nonebot2 项目的`.env`文件中添加下表中的必填配置
+本插件的配置在bot根目录下的config文件夹下，名为picture_api_config.yml，该文件会在插件第一次运行时自动生成。其内容如同介绍中的截图所示。
+写法如下所示：
 
-| 配置项 | 必填 | 默认值 | 说明 |
-|:-----:|:----:|:----:|:----:|
-| 配置项1 | 是 | 无 | 配置说明 |
-| 配置项2 | 否 | 无 | 配置说明 |
+
+    bs|白丝:
+      - url: https://v2.api-m.com/api/baisi?return=302
+        is_proxy: false
+        type: image
+
+
+其中，bs|白丝 代表api的触发指令，用"bs"或者是"白丝"均可触发。url后跟api；is_proxy代表是否使用代理，可不写，默认false；type代表该api是否直接返回图片，可不写，默认为image
+
+也可在一个关键词下设置多个url，如下所示：
+
+
+    hs|黑丝|heisi:
+      - url: https://v2.api-m.com/api/heisi?return=302
+      - url: http://shanhe.kim/api/tu/hs.php
+
+其中，is_proxy与image均没写，采用默认值false和image
+
+如果api返回是json，如下所示：
+
+    ecy:
+      - url: https://api.lolicon.app/setu/v2
+        path: data[0].urls.original
+        type: json
+        is_proxy: true
+
+其中 https://api.lolicon.app/setu/v2 接口返回的json格式如下：
+
+{"error":"","data":[{"pid":75108340,"p":0,"uid":106843,"title":"下着の玉藻","author":"福田シュウシ","r18":false,"width":1430,"height":2000,"tags":["玉藻の前(Fate)","玉藻前（Fate）","キャス狐","C狐","Fate/GrandOrder","命运－冠位指定","下着","内衣","パンツ","内裤","おっぱい","欧派","高品質パンツ","高品质内裤","ブラジャー","胸罩","ぱんつ","胖次"],"ext":"png","aiType":0,"uploadDate":1559919601000,"urls":{"original":"https://i.pixiv.re/img-original/img/2019/06/08/00/00/01/75108340_p0.png"}}]}
+
+path后就需要跟路径data[0].urls.original，指向最终图片的url，注意：返回格式为json的api，必须要写path，并最终指向图片url
+
+如果api返回的是单一个图片链接，配置如下所示：
+
+    meizi:
+      - url: https://xiaobapi.top/api/xb/api/meizi.php
+        type: text
+
+上面的这个接口貌似收费了，这种直接返回图片url的接口不太好找，大体是这么个意思。
+
+一个关键词下可以设置多个url，并且返回不同类型的url也可以混合设置，如下所示：
+
+    美腿:
+      - url: https://api.f4team.cn/API/meizi/
+        type: json
+        path: text
+      - url: http://www.ggapi.cn/api/legs
+
+在上面的配置中，指令"美腿"对应了两个url，第一个url返回json格式，第二个url直接返回图片。注意：第一个api返回的是json格式，其中指向图片url的path恰好是text，并不是说第一个api返回的是text格式。
+
+大概配置就这样。
 
 ## 🎉 使用
-### 指令表
-| 指令 | 权限 | 需要@ | 范围 | 说明 |
-|:-----:|:----:|:----:|:----:|:----:|
-| 指令1 | 主人 | 否 | 私聊 | 指令说明 |
-| 指令2 | 群员 | 是 | 群聊 | 指令说明 |
-### 效果图
-如果有效果图的话
+配置完后直接对机器人发送配置的指令即可，机器人将随机调用该指令下的一个接口。
