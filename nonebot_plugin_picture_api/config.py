@@ -44,9 +44,9 @@ if not config_path.exists():
 
 
 with open(config_path,'r') as f:
-    data = yaml.load(f,Loader=yaml.FullLoader)#读取yaml文件
+    api_data = yaml.load(f,Loader=yaml.FullLoader)#读取yaml文件
 
 class Config(BaseModel, extra=Extra.ignore):
     """Plugin Config Here"""
-    data = data
+    api_data = api_data
     proxies_http: str = None

@@ -17,7 +17,7 @@ __plugin_meta__ = PluginMetadata(
     supported_adapters={"~onebot.v11"},
 )
 plugin_config = Config.parse_obj(get_driver().config)
-cmds_config = plugin_config.data
+cmds_config = plugin_config.api_data
 
 cmds = []
 for cmd in cmds_config:
@@ -52,8 +52,6 @@ async def get_pic(url, is_proxy=False):
     url: 图片api的url
 
     is_proxy: 是否使用代理
-
-    path: json的路径，例如：data[0].url
     '''
     proxies = None
     if is_proxy:
