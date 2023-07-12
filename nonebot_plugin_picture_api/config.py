@@ -5,14 +5,13 @@ import nonebot
 from pathlib import Path
 
 
-config_path = 'config/picture_api_config.yml'
+config_path = Path('config/picture_api_config.yml')
 
 CONFIG_TEMPLATE = {
     #key值设置为要触发的词
     'bs':[
         {'url': 'https://v2.api-m.com/api/baisi?return=302',# 在url字段后面写接口链接
-        'type': 'image',
-        'is_proxy': False,} # 是否使用代理,默认为False
+        'is_proxy': False} # 是否使用代理,默认为False
 
         # 根据接口指定类型类型包括 image text json 如不写则默认为image
         # image指接口直接返回图片
@@ -29,28 +28,20 @@ CONFIG_TEMPLATE = {
     ],
     #返回json示例
     'ecy':[
-        {'url': 'https://sex.nyan.xyz/api/v2/',
-        'type': 'json',
-        'path': 'data[0].url'}, #接口返回链接在 "data数组" 里面用 "[0]" 来指定数组的第几个值后再 ".url" 即可，最后必须指向图片链接
-
-        {'url':'https://api.lolicon.app/setu/v2',
-        'type': 'json',
-        'path': 'data[0].urls.original'}
+        {'url': 'https://sex.nyan.xyz/api/v2/'}, #接口返回链接在 "data数组" 里面用 "[0]" 来指定数组的第几个值后再 ".url" 即可，最后必须指向图片链接
+        {'url':'https://api.lolicon.app/setu/v2'}
     ],
     #返回text示例
     'meizi':[
-    {'url': 'https://xiaobapi.top/api/xb/api/meizi.php',
-    'type': 'text'}
+    {'url': 'https://xiaobapi.top/api/xb/api/meizi.php'}
     ]
 }
 # 检查config文件夹是否存在 不存在则创建
-if not Path("config").exists():
-    Path("config").mkdir()
-if not Path(config_path).exists():
+if not config_path.exists():
+    config_path.mkdir(exist_ok=True)
     with open(config_path, 'w', encoding='utf-8') as f:
-        yaml.dump(CONFIG_TEMPLATE, f, allow_unicode=True)  
+        yaml.dump(CONFIG_TEMPLATE, f, allow_unicode=True)
 
-global_config = nonebot.get_driver().config
 
 with open(config_path,'r') as f:
     data = yaml.load(f,Loader=yaml.FullLoader)#读取yaml文件
@@ -58,4 +49,4 @@ with open(config_path,'r') as f:
 class Config(BaseModel, extra=Extra.ignore):
     """Plugin Config Here"""
     data = data
-    global_config = global_config
+    proxies_http: str = None
