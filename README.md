@@ -71,7 +71,7 @@ _✨ 一款可以自由增删图片指令和api的插件 ✨_
         is_proxy: false
 ```
 
-其中，bs|白丝 代表api的触发指令，用"bs"或者是"白丝"均可触发。url后跟api；is_proxy代表是否使用代理，可不写，默认false；type代表该api是否直接返回图片，可不写，默认为image
+其中，bs|白丝 代表api的触发指令，用"bs"或者是"白丝"均可触发。url后跟api；is_proxy代表是否使用代理，可不写，默认false
 
 也可在一个关键词下设置多个url，如下所示：
 
@@ -80,23 +80,9 @@ _✨ 一款可以自由增删图片指令和api的插件 ✨_
       - url: https://v2.api-m.com/api/heisi?return=302
       - url: http://shanhe.kim/api/tu/hs.php
 ```
-其中，is_proxy与image均没写，采用默认值false和image
+其中，is_proxy没写，采用默认值false
 
-如果api返回的是单一个图片链接，配置如下所示：
-
-```
-    meizi:
-      - url: https://xiaobapi.top/api/xb/api/meizi.php
-```
-
- - 注:上面的这个接口貌似收费了，这种直接返回图片url的接口不太好找，大体是这么个意思。
-
-一个关键词下可以设置多个url，并且返回不同类型的url也可以混合设置，如下所示：
-
-    美腿:
-      - url: https://api.f4team.cn/API/meizi/
-      - url: http://www.ggapi.cn/api/legs
-
+注：不论接口是直接返回图片，还是返回json，或者是返回图片链接，都可以按照上面的方式配置。
 
 ~~大概配置就这样~~。
 
