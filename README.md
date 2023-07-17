@@ -25,8 +25,7 @@ _✨ 一款可以自由增删图片指令和api的插件 ✨_
 ## 📖 介绍
 
 在我调用各种图片api的时候，觉得每个api取一个指令并写一个小插件太麻烦了，因此写了本插件，只需配置yml即可增添图片api以及触发指令，如下图所示：
-
-![image](https://github.com/Q1351998764/nonebot-plugin-picture-api/assets/57926506/6bf57db6-e96f-40a5-a04f-287c525d6db4)
+![image](https://github.com/Q1351998764/nonebot-plugin-picture-api/assets/57926506/2ec52ec1-d1ab-44a0-b826-b492d9e240e8)
 
 
 ## 💿 安装
@@ -44,9 +43,9 @@ _✨ 一款可以自由增删图片指令和api的插件 ✨_
 在 nonebot2 项目的插件目录下, 打开命令行, 根据你使用的包管理器, 输入相应的安装命令
 
 <details>
-<summary>pip</summary>
 
     pip install nonebot-plugin-picture-api
+    
 </details>
 
 打开 nonebot2 项目根目录下的 `pyproject.toml` 文件, 在 `[tool.nonebot]` 部分追加写入
@@ -88,3 +87,9 @@ _✨ 一款可以自由增删图片指令和api的插件 ✨_
 
 ## 🎉 使用
 配置完后直接对机器人发送配置的指令即可，机器人将随机调用该指令下的一个接口。
+
+目前本插件新增指令添加图片接口的功能，指令为"添加图片接口"或"添加图片api"，添加成功后不需要重启nb即可立即使用接口。可以为一个关键词添加多个接口，在触发关键词时会随机调用
+效果如下图所示：
+![image](https://github.com/Q1351998764/nonebot-plugin-picture-api/assets/57926506/a7e9848e-64d1-4bc1-a99c-91b935f25bfc)
+![image](https://github.com/Q1351998764/nonebot-plugin-picture-api/assets/57926506/d9a56120-57b8-469a-9e74-509731adf4b1)
+
