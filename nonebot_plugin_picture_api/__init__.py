@@ -106,14 +106,17 @@ async def get_pic(url, is_proxy=False):
                 else:
                     return 0
 
-            elif is_image or is_text:
+            elif is_text:
                 if not res.text.startswith('http://') and not res.text.startswith('https://'):
                     picture_url = 'https://' + res.text
-                picture = await client.get(picture_url)
-                if picture.status_code == 200:
-                    return picture
-                else:
-                    return 0
+                try:
+                    picture = await client.get(picture_url)
+                    if picture.status_code == 200:
+                        return picture
+                    else:
+                        return 0
+                except:
+                    return res
 
             elif is_json:
                 picture_url = choice(get_url_from_json(res.json()))
