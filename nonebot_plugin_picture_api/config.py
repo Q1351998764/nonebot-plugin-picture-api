@@ -37,10 +37,11 @@ CONFIG_TEMPLATE = {
     ]
 }
 # 检查config文件夹是否存在 不存在则创建
+if not Path("config").exists():
+    Path("config").mkdir()
 if not config_path.exists():
-    config_path.mkdir(exist_ok=True)
     with open(config_path, 'w', encoding='utf-8') as f:
-        yaml.dump(CONFIG_TEMPLATE, f, allow_unicode=True)
+        yaml.dump(CONFIG_TEMPLATE, f, allow_unicode=True)  
 
 
 with open(config_path,'r') as f:
