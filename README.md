@@ -59,9 +59,9 @@ _✨ 一款可以自由增删图片指令和api的插件 ✨_
 - 注: 本插件的配置在bot根目录下的config文件夹下，名为picture_api_config.yml，该文件会在插件第一次运行时自动生成。其内容如同介绍中的截图所示。
 写法如下所示：
 ```
-    bs|白丝:
-      - url: https://v2.api-m.com/api/baisi?return=302
-        is_proxy: false
+bs|白丝:
+  - url: https://v2.api-m.com/api/baisi?return=302
+    is_proxy: false
 ```
 
 其中，bs|白丝 代表api的触发指令，用"bs"或者是"白丝"均可触发。url后跟api；is_proxy代表是否使用代理，可不写，默认false
@@ -69,9 +69,9 @@ _✨ 一款可以自由增删图片指令和api的插件 ✨_
 也可在一个关键词下设置多个url，如下所示：
 
 ```
-    hs|黑丝|heisi:
-      - url: https://v2.api-m.com/api/heisi?return=302
-      - url: http://shanhe.kim/api/tu/hs.php
+hs|黑丝|heisi:
+  - url: https://v2.api-m.com/api/heisi?return=302
+  - url: http://shanhe.kim/api/tu/hs.php
 ```
 其中，is_proxy没写，采用默认值false
 
