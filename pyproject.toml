@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nonebot-plugin-picture-api"
-version = "1.3"
+version = "1.4"
 description = ""
 authors = ["Q1351998764 <57926506+Q1351998764@users.noreply.github.com>"]
 readme = "README.md"
