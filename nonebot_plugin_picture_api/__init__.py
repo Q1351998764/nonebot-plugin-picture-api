@@ -78,7 +78,7 @@ async def get_pic(url, is_proxy=False):
     proxies = None
     if is_proxy:
         try:
-            proxy = plugin_config.proxies_http
+            proxy = plugin_config.global_config.proxies_http
         except:
             await pic.finish("请先在.env中配置代理")
         proxies = {
