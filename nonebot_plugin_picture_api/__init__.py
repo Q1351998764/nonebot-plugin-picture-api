@@ -2,7 +2,7 @@ from nonebot import get_driver
 from nonebot import on_fullmatch, on_message
 from .config import Config, config_path
 from nonebot.adapters.onebot.v11 import MessageSegment
-import httpx, yaml, asyncio
+import httpx, yaml, asyncio, json
 from random import choice
 from nonebot.plugin import PluginMetadata
 from nonebot.params import ArgPlainText, EventPlainText
@@ -22,6 +22,7 @@ plugin_config = Config.parse_obj(get_driver().config)
 cmds_config = plugin_config.api_data
 
 cmds = []
+
 for cmd in cmds_config:
     if '|' in cmd:
         cmds = cmds + (cmd.split('|'))
@@ -101,26 +102,45 @@ async def get_pic(url, is_proxy=False):
             is_json = content_type.startswith('application/json')
             
             if is_image:
-                if res.status_code == 200:
-                    return res
-                else:
-                    return 0
+                return res
 
             elif is_text:
-                if not res.text.startswith('http://') and not res.text.startswith('https://'):
-                    picture_url = 'https://' + res.text
+
+                # 判断是否是json
                 try:
-                    picture = await client.get(picture_url)
+                    resjson = json.loads(res.text)
+                    picture_urls = get_url_from_json(resjson)
+                    if picture_urls:
+                        picture_url = choice(picture_urls)
+                    else:
+                        return 0
+                    picture = await client.get(picture_url, follow_redirects=True, headers=header)
                     if picture.status_code == 200:
                         return picture
                     else:
                         return 0
                 except:
-                    return res
-
+                    picture_url = res.text
+                    if not res.text.startswith('http://') and not res.text.startswith('https://'):
+                        picture_url = 'https://' + res.text
+                        
+                    # 判断是否是image
+                    try:
+                        picture = await client.get(picture_url, follow_redirects=True, headers=header)
+                        if picture.status_code == 200:
+                            return picture
+                        else:
+                            return 0
+                    except:
+                        return res
+                
             elif is_json:
-                picture_url = choice(get_url_from_json(res.json()))
-                picture = await client.get(picture_url)
+                picture_urls = get_url_from_json(res.json())
+                if picture_urls:
+                    picture_url = choice(picture_urls)
+                else:
+                    return 0
+                picture = await client.get(picture_url, follow_redirects=True, headers=header)
                 if picture.status_code == 200:
                     return picture
                 else:
@@ -157,6 +177,8 @@ async def pic_jktj():
     msg = ''
     for i in cmds_config:
         msg = msg + i + "\n"
+    # 去除最后一个换行符
+    msg = msg[:-1]
     await jktj.finish(msg)
 
 @add_api.got("pic_name", prompt="请输入调用词")
