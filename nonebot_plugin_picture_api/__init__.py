@@ -18,7 +18,10 @@ __plugin_meta__ = PluginMetadata(
     config=Config,
     supported_adapters={"~onebot.v11"},
 )
-plugin_config = Config.parse_obj(get_driver().config)
+try:
+    plugin_config = Config.parse_obj(get_driver().config)
+except:
+    plugin_config = Config.model_validate(get_driver().config)
 cmds_config = plugin_config.api_data
 
 cmds = []

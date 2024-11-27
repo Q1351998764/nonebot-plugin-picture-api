@@ -47,7 +47,15 @@ if not config_path.exists():
 with open(config_path,'r') as f:
     api_data = yaml.load(f,Loader=yaml.FullLoader)#读取yaml文件
 
-class Config(BaseModel, extra=Extra.ignore):
-    """Plugin Config Here"""
-    api_data = api_data
-    global_config = global_config
+try:
+    class Config(BaseModel, extra=Extra.ignore, from_attributes=True):
+        """Plugin Config Here"""
+        
+        api_data: dict = api_data
+        global_config: NBConfig = global_config
+except:
+    class Config(BaseModel, extra=Extra.ignore):
+        """Plugin Config Here"""
+        
+        api_data: dict = api_data   
+        global_config: NBConfig = global_config
