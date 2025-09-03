@@ -1,13 +1,18 @@
 from nonebot import get_driver
 from nonebot import on_fullmatch, on_message
+from nonebot.rule import Rule
+from nonebot.adapters import Event
 from .config import Config, config_path
 from nonebot.adapters.onebot.v11 import MessageSegment
 import httpx, yaml, asyncio, json
 from random import choice
 from nonebot.plugin import PluginMetadata
 from nonebot.params import ArgPlainText, EventPlainText
-from nonebot.matcher import Matcher
 from nonebot.permission import SUPERUSER
+
+from nonebot import require
+require("nonebot_plugin_htmlrender")
+
 
 __plugin_meta__ = PluginMetadata(
     name="nonebot-plugin-picture-api",
@@ -18,55 +23,57 @@ __plugin_meta__ = PluginMetadata(
     config=Config,
     supported_adapters={"~onebot.v11"},
 )
+
 try:
     plugin_config = Config.parse_obj(get_driver().config)
 except:
     plugin_config = Config.model_validate(get_driver().config)
 cmds_config = plugin_config.api_data
 
-cmds = []
 
+# 构建指令列表和正则表达式
+cmds = []
 for cmd in cmds_config:
     if '|' in cmd:
-        cmds = cmds + (cmd.split('|'))
+        cmds += cmd.split('|')
     else:
         cmds.append(cmd)
 
+# 动态完全匹配规则：始终基于当前 cmds 列表判断是否命中
+async def _dynamic_fullmatch_rule(event: Event):
+    text = str(event.get_message()).strip()
+    return text in cmds
 
-pic = on_message(priority=10, block=False)
+pic = on_message(rule=Rule(_dynamic_fullmatch_rule), priority=10, block=True)
 jktj = on_fullmatch(["图片接口统计","图片接口","图片api统计","图片api"], priority=10, block=True)
 add_api = on_fullmatch(["添加图片接口","添加图片api"], priority=10, block=True, permission=SUPERUSER)
 
 lock = asyncio.Lock()
 
+
 @pic.handle()
-async def handle_function(matcher: Matcher, msg = EventPlainText()):
-    if msg in cmds:
-        matcher.stop_propagation()
-    else:
-        return
+async def handle_function(msg = EventPlainText()):
+    # 只处理命中指令的消息
     for cmd in cmds_config:
         if msg in cmd:
-            urls = cmds_config[cmd] 
+            urls = cmds_config[cmd]
             url_dic = choice(urls)
             url = url_dic.get('url')
-            is_proxy = False
-            if url_dic.get('is_proxy'):
-                is_proxy = url_dic['is_proxy']
+            is_proxy = url_dic.get('is_proxy', False)
             res = await get_pic(url, is_proxy)
             if res:
                 await pic.finish(MessageSegment.image(res.content))
             else:
+                # 轮询所有接口
                 for url_dic in urls:
                     url = url_dic.get('url')
-                    is_proxy = False
-                    if url_dic.get('is_proxy'):
-                        is_proxy = url_dic['is_proxy']
+                    is_proxy = url_dic.get('is_proxy', False)
                     res = await get_pic(url, is_proxy)
                     if res:
                         await pic.finish(MessageSegment.image(res.content))
-                else:
-                    await pic.finish("{}接口已全部失效，请稍后再试或更换新的接口".format(msg))
+                        return
+                await pic.finish(f"{msg}接口已全部失效，请稍后再试或更换新的接口")
+            return
 
 async def get_pic(url, is_proxy=False):
     '''
@@ -91,7 +98,7 @@ async def get_pic(url, is_proxy=False):
     header = {
         "User-Agent":"Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3947.100 Safari/537.36",
     }
-    async with httpx.AsyncClient(proxies=proxies) as client:
+    async with httpx.AsyncClient(proxy=proxies) as client:
         try:
             res = await client.get(url, follow_redirects=True, headers=header)
         except:
@@ -105,7 +112,10 @@ async def get_pic(url, is_proxy=False):
             is_json = content_type.startswith('application/json')
             
             if is_image:
-                return res
+                if res.status_code == 200:
+                    return res
+                else:
+                    return 0
 
             elif is_text:
 
@@ -184,32 +194,30 @@ async def pic_jktj():
     msg = msg[:-1]
     await jktj.finish(msg)
 
+
 @add_api.got("pic_name", prompt="请输入调用词")
 @add_api.got("pic_api", prompt="请输入图片接口")
 async def add_pic_api(pic_api:str = ArgPlainText(), pic_name:str = ArgPlainText()):
+    global cmds
     # 检查api
     res = await get_pic(pic_api)
-    if res:
-        pass
-    else:
+    if not res:
         await add_api.finish("接口测试失败，请稍后再试或更换接口")
-    
-    # 检测调用词是否已存在
-    if pic_name in cmds:
+
+    async with lock:
+        # 检测调用词是否已存在
+        found = False
         for cmd in cmds_config:
             if pic_name in cmd:
-                async with lock:
-                    api_info = cmds_config.get(cmd)
-                    api_info.append({"url":pic_api})
-                    with open(config_path, 'w', encoding='utf-8') as f:
-                        yaml.dump(cmds_config, f, allow_unicode=True)
-                await add_api.send("添加成功")
+                api_info = cmds_config.get(cmd)
+                api_info.append({"url":pic_api})
+                found = True
                 break
-    else:
-        async with lock:
+        if not found:
             cmds.append(pic_name)
             cmds_config[pic_name] = [{"url":pic_api}]
-            with open(config_path, 'w', encoding='utf-8') as f:
-                yaml.dump(cmds_config, f, allow_unicode=True)
-        await add_api.send("添加成功")
+        with open(config_path, 'w', encoding='utf-8') as f:
+            yaml.dump(cmds_config, f, allow_unicode=True)
+
+    await add_api.send("添加成功")
 
